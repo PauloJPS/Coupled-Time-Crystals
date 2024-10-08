@@ -95,6 +95,8 @@ def simulate():
 
 def MeanField_PD_Work():
 
+    ### Fig 4(a)
+
     parameters = initial_state()
     parameters["tspan"] = (0, 1000)
     parameters["dt"] = 0.1
@@ -135,6 +137,8 @@ def MeanField_PD_Work():
 
 
 def Traj_Efficiency():
+
+    ### Fig 4(c)
 
     parameters = initial_state()
 
@@ -285,6 +289,10 @@ def Sampling_SP():
 
 
 def Conserved_Quantity(mx, my, parameters):
+
+    
+    ### Calculate the conserved quantity for setup 1 defined bellow Eq(11) in the main text 
+
     k, J, Jz, Omega = parameters["k1"], parameters["gx"], parameters["gz"], parameters["ω1x"]
     print(J, Jz)
     lambda_p = np.sqrt(2)*(k + 1.j*(J-Jz))
@@ -300,7 +308,7 @@ def Conserved_Quantity(mx, my, parameters):
 
 def AdiabaticFollowing():
 
-    ### Simulate one mean-field trajectory 
+    ### Changing parameter g adiabatically and observing the solution to check for bistability
     parameters = initial_state()
     parameters["ω1x"] = 2.0
     parameters["ω2x"] = 2.0
@@ -344,6 +352,8 @@ def AdiabaticFollowing():
 
 
 def One_mode_fourier():
+
+    ### Fourier Analysis 
 
     parameters = initial_state()
 

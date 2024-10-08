@@ -109,7 +109,9 @@ def Trajectory_Correlations():
 
 
 def Discord_Entropy_trajectories():
-    
+   
+    ### Fig 6(c)-(d)
+
     parameters = initial_state()
 
     parameters["tspan"] = (0, 100)
@@ -161,7 +163,7 @@ def Discord_Entropy_trajectories():
 
 def HeatEntropy_tc_sp():
 
-    #### Fig Appendix (subdominant heat and entropy)
+    #### Fig Appendix (subdominant heat and entropy - removed from appendix)
 
     parameters = initial_state()
     parameters["tspan"] = (0, 20)

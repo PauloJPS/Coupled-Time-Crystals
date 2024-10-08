@@ -17,6 +17,12 @@ from scipy.integrate import simpson
 sys.path.insert(0, '../../')
 from MeanField import Simul_Traj
 
+#
+#
+# Evaluate the phase diagram in setup 1 
+#
+#
+
 def initial_state():
     ω1x = 0.0
     ω1z = 0.0

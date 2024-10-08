@@ -15,10 +15,7 @@ import pickle
 
 plt.rcParams.update({
     "text.usetex": True,
-    "text.latex.preamble": r"\usepackage[T1]{fontenc} 
-                             \usepackage{amsmath} 
-                             \usepackage{amsfonts}
-                             \usepackage{bbm}",
+    "text.latex.preamble": r"\usepackage[T1]{fontenc} \usepackage{amsmath} \usepackage{amsfonts} \usepackage{bbm}",
     #
     "xtick.minor.visible": True,
     "ytick.minor.visible": True,
@@ -63,10 +60,10 @@ plt.rcParams.update({
 })
 
 
-with open("Data_mean_field.pickle", 'rb') as handle:
+with open("Data/Data_mean_field.pickle", 'rb') as handle:
     data_mef = pickle.load(handle)
 
-with open("Data_asymmetry_correlations.pickle", 'rb') as handle:
+with open("Data/Data_asymmetry_correlations.pickle", 'rb') as handle:
     data_cor = pickle.load(handle)
 
 
@@ -124,8 +121,6 @@ ax01 = inset_axes(ax0, width="35%", height="40%", loc="upper right")  # Adjust s
 
 ax01.plot(g_list, work_tc[0], linestyle="-", color="black", marker="s", markersize=0.5, linewidth=0)
 
-ax01.plot(g_list, 2**2/(np.array(g_list)**2 + 1) )
-
 ax01.set_ylabel(r"$ \bar{\dot{w}}/(\kappa\nu)$",labelpad=-0.5)
 ax01.set_xlabel(r"$J_z/\kappa$",labelpad=-0.5)
 
@@ -175,5 +170,5 @@ plt.setp(ax1.get_xticklabels(), visible=False)
 plt.tight_layout()
 
 
-#plt.savefig("Setup1_MF_QF.pdf", bbox_inches="tight")
+#plt.savefig("Figure/Setup1_MF_QF.pdf", bbox_inches="tight")
 

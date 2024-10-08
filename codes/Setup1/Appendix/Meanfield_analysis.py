@@ -88,8 +88,7 @@ def simulate():
 def TimeCrystal_Familiy():
 
 
-    ### FIGURE ? For now at the appendix
-
+    ### FIGURE 6(a)  
 
     ### Simulate one mean-field trajectory 
     parameters = initial_state()
@@ -144,6 +143,8 @@ def TimeCrystal_Familiy():
 
 
 def Efficiency_SP_trajs():
+
+    ### Fig 6(b)
 
     ### Simulate one mean-field trajectory 
     parameters = initial_state()

@@ -90,6 +90,7 @@ def simulate():
 def MeanField_PD():
 
     #### FIGURE 2(a)
+    #### Also done in parallel in the code Bistability_parallel.py
 
     parameters_tc = initial_state()
     parameters_sp = initial_state()
@@ -269,15 +270,6 @@ def Evaluating_Bistability():
     return ergotropy, g_list
 
 
-
-
-
-
-
-
-
-
-
 def Comparison_SS_TC_efficiency():
 
     ### FIGURE 3 (b)-(c)
@@ -333,6 +325,6 @@ def Comparison_SS_TC_efficiency():
     data.update({"mz_ss":mz_ss})
 
     data.update({"times":times})
-    with open('Data_efficiency_sp_tp.pickle', 'wb') as handle:
+    with open('Data/Data_efficiency_sp_tp.pickle', 'wb') as handle:
         pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
