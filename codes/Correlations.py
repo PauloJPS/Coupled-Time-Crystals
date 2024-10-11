@@ -12,9 +12,6 @@ from scipy.linalg import sqrtm, eigvals
 from scipy.integrate import simpson
 
 
- 
-
-
 ######
 ###### The dynamics of the covariance matrix and the mean-field quantities 
 ######
@@ -119,7 +116,7 @@ def get_traj(tspan, dt, ω1x, ω1z, ω2x, ω2z, gx, gy, gz, k1, k2, n1, n2,
 
     p = (ω1x, ω1z, ω2x, ω2z, gx, gy, gz, k1, k2, n1, n2)
 
-    sol = solve_ivp(func, tspan, initial, args=p, method='DOP853', t_eval=np.arange(tspan[0], tspan[1], dt), rtol=1e-12, atol=1e-12)
+    sol = solve_ivp(func, tspan, initial, args=p, method='DOP853', t_eval=np.arange(tspan[0], tspan[1], dt), rtol=1e-14, atol=1e-14)
     print("Status = {}\n".format(sol.status))
 
     return sol.t, sol.y.T
@@ -130,6 +127,61 @@ def Simul_Traj(parameters):
     t, sol = get_traj(**parameters)
     
     return t, sol
+
+def initial_state():
+
+    ω1x = 2.0
+    ω1z = 0.0
+    
+    ω2x = 2.0
+    ω2z = 0.0
+    
+    gx, gy = 0, 0
+    gz = 0.0
+    
+    k1 = 1.0
+    k2 = 1.0
+    
+    n1 = 0.0
+    n2 = 0.0
+    
+    ### Initial state in the ground-state of the bare Hamiltonian
+    
+    parameters = {"tspan": (0, 100),
+                      "dt": 0.05,
+                      "ω1x": ω1x,
+                      "ω1z": ω1z,
+                      "ω2x": ω2x,
+                      "ω2z": ω2z,
+                      "gx": gx,
+                      "gy": gy,
+                      "gz": gz,
+                      "k1": k1,
+                      "k2": k2,
+                      "n1": n1, 
+                      "n2": n2, 
+                      "m1x0": 0.0,
+                      "m1y0": 0.0,
+                      "m1z0": -np.sqrt(1.0/2.0),
+                      "m2x0": 0.0,
+                      "m2y0": 0.0,
+                      "m2z0": -np.sqrt(1.0/2.0),
+                      "G0": np.array([[0.5, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 0.5, 0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.5, 0.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0, 0.5, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]),
+                      "L0": np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
+                                      [0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
+                  }
+   
+    return parameters
+
 
 #########
 ######### the physical quantities from the object returned by the solver 
@@ -169,29 +221,29 @@ def SymplecticMatrix(sol):
 #########
 
 def EvaluateEmin(c_alpha, c_beta, c_gamma, c_delta):
-    if (c_delta - c_alpha*c_beta)**2 <= (1 + c_beta)*(c_gamma**2)*(c_alpha + c_delta):
-        Emin = (1/(c_beta-1)**2) * (2*c_gamma**2 + (c_beta-1)*(c_delta - c_alpha) 
+    if (c_delta - c_alpha*c_beta)**2 <= (1 + c_beta)*(c_gamma**2)*(c_alpha + c_delta) and c_beta > 1:
+        Emin =  (2*c_gamma**2 + (c_beta-1)*(c_delta - c_alpha) 
                                     + 2*np.abs(c_gamma)*np.sqrt(c_gamma**2 + (c_beta-1)*(c_delta - c_alpha)))
-    else:
-        Emin = (1/(2*c_beta))*(c_alpha*c_beta - c_gamma**2 + c_delta 
+        Emin = np.divide(Emin,(c_beta-1)**2)
+    elif c_gamma**4 + (c_delta-c_alpha*c_beta)**2 - 2*c_gamma**2*(c_alpha*c_beta + c_delta) > 0:
+        Emin = (c_alpha*c_beta - c_gamma**2 + c_delta 
                                - np.sqrt(c_gamma**4 + (c_delta-c_alpha*c_beta)**2 - 2*c_gamma**2*(c_alpha*c_beta + c_delta) ))
-
-    return np.nan_to_num(Emin) 
+        Emin = np.divide(Emin, 2*c_beta)
+    else: Emin = 1
+    return Emin
 
 #### function defined for calculating discord (just time/spacing saving)
 def func_log(x):
     ##### removing log with negative values in the argument
-    if np.isclose(x, 1.0)==True:
-        x = 1
-    if x == 1: 
-        #print("got a log problem\n") 
-        return (x+1)/2 * np.log((x+1)/2)
+    if np.isclose(x, 1.0, rtol=1e-4, atol=1e-4)==True and x <= 1:
+        return 0 
     else: 
         return (x+1)/2 * np.log((x+1)/2) - (x-1)/2 * np.log((x-1)/2)
   
-def QuantumClassicalThermodynamics(sol):
+def QuantumClassicalThermodynamics(sol, time):
     """
-        Calculate quantum discord, one-way classical correlation, mutual information, according to the definition in the paper PRL 105, 030501 (2010)
+        Calculate quantum discord, one-way classical correlation, mutual information,
+          according to the definition in the paper PRL 105, 030501 (2010)
     """
     num_rows, num_columns = sol.shape
 
@@ -217,35 +269,32 @@ def QuantumClassicalThermodynamics(sol):
 
         #### upper diagonal block
         c_alpha = np.linalg.det(alpha)
-        #print("c_alpha = {:.4f}".format(c_alpha))
-
+        if np.isclose(c_alpha, 1.0)==True and c_alpha<1: c_alpha=1
+        ########
         c_beta = np.linalg.det(beta)
-        #print("c_beta = {:.4f}".format(c_beta))
-
-        c_gamma = np.linalg.det(gamma)
-        #print("c_gamma = {:.4f}".format(c_gamma))
-
-        #### covariance matrix 
+        if np.isclose(c_beta, 1.0)==True and c_beta<1: c_beta=1
+        ########
         c_delta = np.linalg.det(reducedCov)
-        #print("c_delta = {:.4f}".format(c_delta))
+        if np.isclose(c_delta, 1.0)==True and c_delta<1:c_delta=1
+
+        ########
+        c_gamma = np.linalg.det(gamma)
 
         #### Symplectic eigenvalues 
         Delta = c_alpha + c_beta + 2*c_gamma
         TR_Delta = c_alpha + c_beta - 2*c_gamma
 
-        #print("Delta = {:.4f}".format(Delta))
-        #print("Delta**2 - 4*c_delta = {:.4f}".format(Delta**2 - 4*c_delta)) 
-    
         v_p = np.sqrt(0.5*Delta + 0.5*np.sqrt(np.abs(Delta**2 - 4*c_delta) ))#### the abs prevents numeric negative zeros
         v_m = np.sqrt(0.5*Delta - 0.5*np.sqrt(np.abs(Delta**2 - 4*c_delta) ))#### the abs prevents numeric negative zeros
-                                                                                      
+
         #### E min 
         Emin = EvaluateEmin(c_alpha, c_beta, c_gamma, c_delta)
 
         #### Thermodynamic quantities 
         J_one_way = func_log(np.sqrt(c_alpha)) - func_log(np.sqrt(Emin))
-
         Q_Discord = func_log(np.sqrt(c_beta)) - func_log(v_m) - func_log(v_p) + func_log(np.sqrt(Emin))
+        if J_one_way < 0 or Q_Discord < 0: J_one_way, Q_Discord = 0, 0
+        ### This is due to numerical instability 
 
         Log_neg = np.max([0, -np.log(np.sqrt(0.5*TR_Delta - 0.5*np.sqrt(np.abs(TR_Delta**2 - 4*c_delta))))])
 
@@ -256,14 +305,8 @@ def QuantumClassicalThermodynamics(sol):
 
         Total_entropy = func_log(v_p) + func_log(v_m)
 
-        #### Ergotropy - test 
-
-        Erg = (2*(reducedCov[0][2] + reducedCov[1][3]) + ((v_p+v_m) - (v_p-v_m))/8)
-
-        print(reducedCov[2][0], v_p)
-       
         #### Appending everything in a vector 
-        informational_quantities.append([J_one_way, Q_Discord, Log_neg, Mutual_informaiton, Total_entropy, Entropy_1, Entropy_2, Erg])
+        informational_quantities.append([J_one_way, Q_Discord, Log_neg, Mutual_informaiton, Total_entropy, Entropy_1, Entropy_2])
 
     #### returning the quantities 
     return np.array(informational_quantities).T
@@ -293,7 +336,7 @@ def simulate():
     ### Initial state in the ground-state of the bare Hamiltonian
     
     parameters = {"tspan": (0, 50),
-                      "dt": 0.01,
+                      "dt": 0.1,
                       "ω1x": ω1x,
                       "ω1z": ω1z,
                       "ω2x": ω2x,
@@ -330,291 +373,38 @@ def simulate():
 
     return time, sol, information
 
-#def PhaseMap_n_g():
-#    ω1x = 2.0
-#    ω1z = 0.0
-#    
-#    ω2x = 2.0
-#    ω2z = 0.0
-#    
-#    gx, gy = 2.0, 2.0
-#    gz = 2.0 
-#    
-#    k1 = 1.0
-#    k2 = 1.0
-#
-#    n1 = 1 
-#    n2 = 0.5
-#   
-#    ### Initial state in the ground-state of the bare Hamiltonian
-#    
-#    parameters = {"tspan": (0, 50),
-#                      "dt": 0.1,
-#                      "ω1x": ω1x,
-#                      "ω1z": ω1z,
-#                      "ω2x": ω2x,
-#                      "ω2z": ω2z,
-#                      "gx": gx,
-#                      "gy": gy,
-#                      "gz": gz,
-#                      "k1": k1,
-#                      "k2": k2,
-#                      "n1": n1, 
-#                      "n2": n2, 
-#                      "m1x0": 0.0,
-#                      "m1y0": 0.0,
-#                      "m1z0": -np.sqrt(1.0/2.0),
-#                      "m2x0": 0.0,
-#                      "m2y0": 0.0,
-#                      "m2z0": -np.sqrt(1.0/2.0),
-#                      "G0": np.array([[0.5, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.5, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.5, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 0.5, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]),
-#
-#                      "L0": np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
-#                  }
-# 
-#   
-#    ### Parameter lists 
-#    N_n2 = 20
-#    N_g = 20
-#
-#    n2_list = np.linspace(0.5, 1.5, N_n2)
-#    g_list = np.linspace(0.5, 1.5, N_g)
-#
-#    
-#    ### Time interval to avarege 
-#    tlen = parameters["tspan"][1]
-#    Nint = int(tlen/parameters["dt"])
-#
-#    ### Phase-diagram maps heat matrix 
-#    Heat_mat = np.zeros((N_n2, N_g))
-#    SubH_mat = np.zeros((N_n2, N_g))
-#
-#    Entr_mat = np.zeros((N_n2, N_g))
-#    Ccor_mat = np.zeros((N_n2, N_g))
-#    Disc_mat = np.zeros((N_n2, N_g))
-#    Nega_mat = np.zeros((N_n2, N_g))
-#
-#    ### counter 
-#    counter = 0  
-#
-#    ### Looping 
-#    for i, n2 in enumerate(n2_list):
-#        for j, g in enumerate(g_list):
-#
-#            print("Interaction [{}] out of [{}], gz={}, g={} ".format(counter,N_n2 * N_g, n2, g))
-#
-#            ### setting parameter 
-#            parameters["gz"] = g 
-#            parameters["gy"] = g
-#            parameters["gx"] = g
-#            parameters["n2"] = n2
-#    
-#            ### getting the solution 
-#            time, sol = Simul_Traj(parameters)
-#
-#            ## getting the information theory quantities
-#            information = QuantumClassicalThermodynamics(sol)
-#
-#            ### getting heat  
-#            total_heat = -(sol[:,-6]**2 + sol[:,-5]**2) - (sol[:,-3]**2 + sol[:,-2]**2)
-#
-#            ### Sub dominant heat current 
-#
-#            q_sub_1 = sol[:,0] + sol[:,0+7] + 2*np.sqrt(2)*sol[:,36+36+2]*(2*parameters["n1"] + 1)
-#            q_sub_2 = sol[:,21] + sol[:,21+7] + 2*np.sqrt(2)*sol[:,36+36+5]*(2*parameters["n2"] + 1)
-#
-#            q_sub = q_sub_1 - q_sub_2
-#
-#            ### Information quantities 
-#
-#            Ccor = information[0]
-#            Disc = information[1]
-#            Nega = information[2]
-#            Entr = information[4]
-#
-#            ### getting time interval (last quarter) 
-#            Nint_init = int((3/4)*Nint)
-#            
-#            av_heat = 1/(time[-1] - time[Nint_init]) * simpson(total_heat[Nint_init:], dx=parameters["dt"])
-#
-#            av_subh = 1/(time[-1] - time[Nint_init]) * simpson(q_sub[Nint_init:], dx=parameters["dt"])
-#
-#            av_entr = 1/(time[-1] - time[Nint_init]) * simpson(Entr[Nint_init:], dx=parameters["dt"])
-#
-#            av_ccor = 1/(time[-1] - time[Nint_init]) * simpson(Ccor[Nint_init:], dx=parameters["dt"])
-#
-#            av_disc = 1/(time[-1] - time[Nint_init]) * simpson(Disc[Nint_init:], dx=parameters["dt"])
-#
-#            av_nega = 1/(time[-1] - time[Nint_init]) * simpson(Nega[Nint_init:], dx=parameters["dt"])
-#            
-#            Heat_mat[i][j] = av_heat
-#            SubH_mat[i][j] = av_subh
-#            Entr_mat[i][j] = av_entr
-#            Ccor_mat[i][j] = av_ccor
-#            Disc_mat[i][j] = av_disc
-#            Nega_mat[i][j] = av_nega
-#
-#            counter += 1   
-#
-#    data = parameters.copy()
-#    data.update({"PhaseMap_heat":Heat_mat})
-#    data.update({"PhaseMap_subh":SubH_mat})
-#    data.update({"PhaseMap_entr":Entr_mat})
-#    data.update({"PhaseMap_ccor":Ccor_mat})
-#    data.update({"PhaseMap_disc":Disc_mat})
-#    data.update({"PhaseMap_nega":Nega_mat})
-#    data.update({"n2_list": n2_list})
-#    data.update({"g_list":g_list})
-#
-#
-#    with open('data_phase_maps/Data_heat_gz_g.pickle', 'wb') as handle:
-#        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-#
-#    return Heat_mat, SubH_mat, Entr_mat, Ccor_mat, Disc_mat, Nega_mat
-#
-#def PhaseMap_g():
-#    ω1x = 2.0
-#    ω1z = 0.0
-#    
-#    ω2x = 2.0
-#    ω2z = 0.0
-#    
-#    gx, gy = 2.0, 2.0
-#    gz = 2.0 
-#    
-#    k1 = 1.0
-#    k2 = 1.0
-#
-#    n1 = 0
-#    n2 = 0
-#   
-#    ### Initial state in the ground-state of the bare Hamiltonian
-#    
-#    parameters = {"tspan": (0, 1000),
-#                      "dt": 0.1,
-#                      "ω1x": ω1x,
-#                      "ω1z": ω1z,
-#                      "ω2x": ω2x,
-#                      "ω2z": ω2z,
-#                      "gx": gx,
-#                      "gy": gy,
-#                      "gz": gz,
-#                      "k1": k1,
-#                      "k2": k2,
-#                      "n1": n1, 
-#                      "n2": n2, 
-#                      "m1x0": 0.0,
-#                      "m1y0": 0.0,
-#                      "m1z0": -np.sqrt(1.0/2.0),
-#                      "m2x0": 0.0,
-#                      "m2y0": 0.0,
-#                      "m2z0": -np.sqrt(1.0/2.0),
-#                      "G0": np.array([[0.5, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.5, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.5, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 0.5, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]),
-#
-#                      "L0": np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-#                                      [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
-#                  }
-# 
-#   
-#    ### Parameter lists 
-#    N_g = 40
-#
-#    g_list = np.linspace(0, 4, N_g)
-#
-#    
-#    ### Time interval to avarege 
-#    tlen = parameters["tspan"][1]
-#    Nint = int(tlen/parameters["dt"])
-#
-#    ### Phase-diagram maps heat matrix 
-#    Heat_mat = np.zeros(N_g)
-#    Entr_mat = np.zeros(N_g)
-#    Ccor_mat = np.zeros(N_g)
-#    Disc_mat = np.zeros(N_g)
-#    Nega_mat = np.zeros(N_g)
-#
-#    ### counter 
-#    counter = 0  
-#
-#    ### Looping 
-#    for i,g in enumerate(g_list):
-#
-#        gz = 4-g
-#
-#        print("Interaction [{}] out of [{}], gz={}, g={} ".format(counter,N_g, gz, g))
-#
-#        ### setting parameter 
-#        parameters["gz"] = gz 
-#        parameters["gy"] = g
-#        parameters["gx"] = g
-#    
-#        ### getting the solution 
-#        time, sol = Simul_Traj(parameters)
-#
-#        ## getting the information theory quantities
-#        information = QuantumClassicalThermodynamics(sol)
-#
-#        ### getting heat  
-#        total_heat = -(sol[:,-6]**2 + sol[:,-5]**2) - (sol[:,-3]**2 + sol[:,-2]**2)
-#
-#        Entr = information[4]
-#        Ccor = information[0]
-#        Disc = information[1]
-#        Nega = information[2]
-#
-#        ### getting time interval (last quarter) 
-#        Nint_init = int((3/4)*Nint)
-#        
-#        av_heat = 1/(time[-1] - time[Nint_init]) * simpson(total_heat[Nint_init:], dx=parameters["dt"])
-#
-#        av_entr = 1/(time[-1] - time[Nint_init]) * simpson(Entr[Nint_init:], dx=parameters["dt"])
-#
-#        av_ccor = 1/(time[-1] - time[Nint_init]) * simpson(Ccor[Nint_init:], dx=parameters["dt"])
-#
-#        av_disc = 1/(time[-1] - time[Nint_init]) * simpson(Disc[Nint_init:], dx=parameters["dt"])
-#
-#        av_nega = 1/(time[-1] - time[Nint_init]) * simpson(Nega[Nint_init:], dx=parameters["dt"])
-#        
-#        Heat_mat[i] = av_heat
-#        Entr_mat[i] = av_entr
-#        Ccor_mat[i] = av_ccor
-#        Disc_mat[i] = av_disc
-#        Nega_mat[i] = av_nega
-#
-#        counter += 1   
-#
-#    data = parameters.copy()
-#    data.update({"PhaseMap_heat":Heat_mat})
-#    data.update({"PhaseMap_entr":Entr_mat})
-#    data.update({"PhaseMap_ccor":Ccor_mat})
-#    data.update({"PhaseMap_disc":Disc_mat})
-#    data.update({"PhaseMap_nega":Nega_mat})
-#    data.update({"g_list":g_list})
-#
-#
-#    with open('data_phase_maps/Data_heat_g.pickle', 'wb') as handle:
-#        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-#
-#    return Heat_mat, Entr_mat, Ccor_mat, Disc_mat, Nega_mat
-#
-#
-#
+def Trajectory_Correlations():
+
+    parameters = initial_state()
+
+    parameters["tspan"] = (0, 100)
+    parameters["dt"] = 0.01
+
+    parameters["ω1x"] = 0.8
+    parameters["ω2x"] = 0.8
+
+    ### Time interval to avarege
+    tlen = parameters["tspan"][1]
+    Nint = int(tlen/parameters["dt"])
+
+
+    gz, g = 0.0, 1.0
+
+    parameters["gz"] = gz
+    parameters["gy"] = g
+    parameters["gx"] = g
+
+    ### getting the solution
+    time, sol = Simul_Traj(parameters)
+
+    ## getting the information theory quantities
+    information = QuantumClassicalThermodynamics(sol, time)
+
+    Ccor = information[0]
+    Disc = information[1]
+    Nega = information[2]
+    Entr = information[4]
+    mf = MeanField(sol)
+    return time, Ccor, Disc, Nega, Entr, mf 
+
+

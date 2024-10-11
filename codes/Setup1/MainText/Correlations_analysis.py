@@ -129,8 +129,6 @@ def Asymmetry_correlations():
     ### List of couplings 
     N_g = 200 + 1
     g_list = np.linspace(0, 4, N_g)
-    #N_g = 7
-    #g_list = (4, 3.5, 3, 2, 1, 0.5, 0) 
 
     ### Phase-diagram maps heat matrix 
     Entr_mat = np.zeros(N_g)

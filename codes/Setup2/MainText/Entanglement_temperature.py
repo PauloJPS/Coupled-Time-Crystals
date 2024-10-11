@@ -14,7 +14,7 @@ from scipy.integrate import simpson
 from scipy.fft import fft, fftfreq
 
 # adding Folder_2/subfolder to the system path
-sys.path.insert(0, '../')
+sys.path.insert(0, '../../')
 
 from Correlations import *
 
@@ -71,6 +71,39 @@ def initial_state():
                   }
    
     return parameters
+
+def Trajectory_Correlations():
+
+    parameters = initial_state()
+
+    parameters["tspan"] = (0, 50)
+
+    parameters["ω1x"] = 0
+    parameters["ω2x"] = 1.5
+
+    ### Time interval to avarege
+    tlen = parameters["tspan"][1]
+    Nint = int(tlen/parameters["dt"])
+
+
+    gz, g = 0, 1.5
+
+    parameters["gz"] = gz
+    parameters["gy"] = g
+    parameters["gx"] = g
+
+    ### getting the solution
+    time, sol = Simul_Traj(parameters)
+
+    ## getting the information theory quantities
+    information = QuantumClassicalThermodynamics(sol)
+
+    Ccor = information[0]
+    Disc = information[1]
+    Nega = information[2]
+    Entr = information[4]
+
+    return time, Ccor, Disc, Nega, Entr
 
 
 def Entanglement_Temp_SP():
