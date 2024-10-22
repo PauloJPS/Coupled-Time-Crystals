@@ -60,15 +60,15 @@ plt.rcParams.update({
     "xtick.minor.size": 3.5,
     "ytick.minor.size": 3.5,
     #
-    "xtick.labelsize": 20,
-    "ytick.labelsize": 20,
+    "xtick.labelsize": 15,
+    "ytick.labelsize": 15,
     #
     "legend.frameon": True,
-    "legend.fontsize": 20,
+    "legend.fontsize": 15,
     "legend.edgecolor": "white",
-    "axes.titlesize": 20,
+    "axes.titlesize": 15,
     "axes.titleweight": "bold",
-    "axes.labelsize":20
+    "axes.labelsize":15
 })
 
 
@@ -84,7 +84,7 @@ with open("Data/Data_bistable_trajectories.pickle", "rb") as handle:
     data_traj = pickle.load(handle)
 
 
-fig, ax = plt.subplots(1,2, figsize=(8, 3))
+fig, ax = plt.subplots(1,2, figsize=(8, 2))
 
 ########
 
@@ -93,8 +93,8 @@ cbar = fig.colorbar(pos)
 
 cbar.ax.set_title(r"$\log(\sigma)$", y=-0.2, pad=-0, loc="left")
 
-ax[0].set_xlabel(r"$\Omega/\kappa$",fontsize=24,labelpad=0)
-ax[0].set_ylabel(r"$J/ \kappa$",fontsize=24,labelpad=0)
+ax[0].set_xlabel(r"$\Omega/\kappa$")
+ax[0].set_ylabel(r"$J/ \kappa$")
 ax[0].set_xlim(0.1,3)
 ax[0].set_ylim(0.1,3)
 
@@ -103,24 +103,12 @@ ax[0].set_ylim(0.1,3)
 ax[1].plot(data_traj["times"], data_traj["sol1"][0:,5], color="#e41a1c") 
 ax[1].plot(data_traj["times"], data_traj["sol2"][0:,5], color="#377eb8", linestyle="-") 
 
-ax[1].set_ylabel(r"$m_z(t)$",fontsize=24,labelpad=-10)
-ax[1].set_xlabel(r"$t\kappa$",fontsize=24,labelpad=0)
+ax[1].set_ylabel(r"$m_z(t)$")
+ax[1].set_xlabel(r"$t\kappa$")
 
 ax[1].set_xlim((0, 30))
 
-
-
-
-
-
-
-
-
-
-
-
-
-plt.subplots_adjust(wspace=0.4)
+plt.subplots_adjust(wspace=0.4, bottom=0.1, top=0.9)
 
 plt.savefig("multistability_var_2.pdf", bbox_inches="tight")
 

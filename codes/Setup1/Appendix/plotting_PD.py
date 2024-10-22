@@ -98,73 +98,48 @@ fig = plt.figure(figsize=(8, 3))
 
 # Add the large square subplot (2x2 grid) in the left part
 ax0 = fig.add_subplot(1, 2, 1)  # 1 row, 2 columns, 1st position
-ax01 = inset_axes(ax0, width="35%", height="40%", loc="upper right")  # Adjust size and position
 ax1 = fig.add_subplot(2, 2, 2)  # 2 rows, 2 columns, 2nd position
 ax2 = fig.add_subplot(2, 2, 4, sharex=ax1)  # 2 rows, 2 columns, 4th position
 
 
 plt.tight_layout()
 
-cbar_et_1 = ax0.pcolormesh(GZ, G, np.array(work_tc), cmap="PuBu_r", rasterized=True)
+cbar_et_1 = ax0.pcolormesh(GZ, G, np.array(work_sp), cmap="PuBu_r", rasterized=True)
 cbar1 = fig.colorbar(cbar_et_1, ax=ax0, pad=.02, orientation='vertical')
-cbar1.ax.set_title(r"$\bar{\dot{w}}/(\kappa\nu)$")#, y=-0.2)
+cbar1.ax.set_title(r"$\bar{\dot{w}}/(\kappa\nu)$")
 
-ax0.set_xlabel(r"$J_z/\kappa$")#,labelpad=-0.5)
-ax0.set_ylabel(r"$J/\kappa$")#,labelpad=-0.5)
-
-#ax0.set_xticks([0, 3])
-#ax0.set_yticks([0, 4])
+ax0.set_xlabel(r"$J_z/\kappa$")
+ax0.set_ylabel(r"$J/\kappa$")
 
 ax0.set_xlim((0, 4))
 ax0.set_ylim((0, 4))
 
-
-ax0.plot([0,4], [4,0], color="black", linewidth=1)
-
-## Inset 
-
-
-ax01.plot(g_list, work_tc[0], linestyle="-", color="black", marker="s", markersize=0.5, linewidth=0)
-
-ax01.set_ylabel(r"$ \bar{\dot{w}}/(\kappa\nu)$")#,labelpad=-0.5)
-ax01.set_xlabel(r"$J_z/\kappa$")#,labelpad=-0.5)
-
-ax01.set_xticks([0, 4])
-ax01.set_yticks([0, 1])
-
-ax01.set_xlim((0, 4))
-ax01.set_ylim((0, 1))
-
-ax01.text(0.4, 0.1, r"$J=0$", fontsize=15)
-
-
 # Add the first small subplot (1x1 grid) to the right
 
-ax1.plot(g_list_cor, PhaseMap_ccor_tc, color="#e41a1c", marker="o", markersize=5)
+ax1.plot(g_list_cor, PhaseMap_ccor_sp, color="#e41a1c", marker="o", markersize=5)
                                                                    
-ax1.set_ylabel(r"$\mathcal{J}$")
+ax1.set_ylabel(r"$\bar{\mathcal{J}}$")
 
 ax1.set_xlim((0,4))
-ax1.set_ylim((0,7))
+ax1.set_ylim((0,0.01))
+
+
+ax1.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
 
 # Add the second small subplot (1x1 grid) below the first small one
 
-ax2.plot(g_list_cor, PhaseMap_disc_tc,color="#e41a1c", marker="o", markersize=5, linestyle="-",  label=r"$\mathcal{D}$")
-ax2.plot(g_list_cor, PhaseMap_nega_tc,color="#377eb8", marker="s", markersize=5, linestyle="--", label=r"$\mathcal{N}$")
+ax2.plot(g_list_cor, PhaseMap_disc_sp,color="#e41a1c", marker="o", markersize=5, linestyle="-",  label=r"$\bar{\mathcal{D}}$")
+ax2.plot(g_list_cor, PhaseMap_nega_sp,color="#377eb8", marker="s", markersize=5, linestyle="--", label=r"$\bar{\mathcal{N}}$")
+
+ax2.set_xlabel(r"$J + J_z=4\kappa$")
+
+ax2.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
 
 ax2.set_xlim((0,4))
-ax2.set_ylim((0,0.22))
-ax2.set_xlabel(r"$J + J_z=4\kappa$")
+ax2.set_ylim((0,0.07))
 
 ax2.legend(edgecolor="black", framealpha=1,handlelength=1.3, borderpad=0.3, fontsize=15, loc=1, labelspacing=0.1, handletextpad=0.4, ncol=1, columnspacing=0.3)
 
-ax21 = inset_axes(ax2, width="40%", height="35%", loc="center")  # Adjust size and position
-ax21.plot(g_list_cor, PhaseMap_disc_tc, linestyle="-", color="#e41a1c", marker="o")
-ax21.plot(g_list_cor, PhaseMap_nega_tc, linestyle="--", color="#377eb8", marker="s")
-
-ax21.set_xlim((1.5,2.5))
-ax21.set_ylim((0,0.01))
-ax21.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
 
 # Hide x-axis labels of the first small subplot to avoid overlap
 plt.setp(ax1.get_xticklabels(), visible=False)
@@ -172,5 +147,4 @@ plt.subplots_adjust(bottom=0.2, top=0.9)
 # Adjust layout to prevent overlapping
 
 
-plt.savefig("Figures/Setup1_PD.pdf")#, bbox_inches="tight")
-
+plt.savefig("Figures/Setup1_PD_Appendix.pdf")#, bbox_inches="tight")

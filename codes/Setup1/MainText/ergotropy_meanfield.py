@@ -284,24 +284,6 @@ def Evaluating_Bistability():
     return ergotropy_tc2sp, ergotropy_sp2tc, g_list_tc2sp, g_list_sp2tc
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def AdiabaticFollowing():
 
     ### Simulate one mean-field trajectory 

@@ -48,15 +48,15 @@ plt.rcParams.update({
     "xtick.minor.size": 3.5,
     "ytick.minor.size": 3.5,
     #
-    "xtick.labelsize": 20,
-    "ytick.labelsize": 20,
+    "xtick.labelsize": 15,
+    "ytick.labelsize": 15,
     #
     "legend.frameon": True,
-    "legend.fontsize": 20,
+    "legend.fontsize": 15,
     "legend.edgecolor": "white",
-    "axes.titlesize": 20,
+    "axes.titlesize": 15,
     "axes.titleweight": "bold",
-    "axes.labelsize":20
+    "axes.labelsize":15
 })
 
 
@@ -80,12 +80,11 @@ cbar_et = ax[0][0].pcolormesh(X, Y, (np.array(data_seed["modes_m2"])).T.real, cm
 
 cbar1 = fig.colorbar(cbar_et, ax=ax[0][0], pad=.01, fraction=0.05,  orientation='vertical')
 
-ax[0][0].set_ylim((0, 0.6))
+ax[0][0].set_ylim((0, 0.5))
 
 ax[0][0].set_xlabel(r"$J/\kappa$")
 ax[0][0].set_ylabel(r"$\tilde{\omega}_2$")
 
-ax[0][0].set_xticks([0, 2])
 ################
 
 ax[0][1].plot(data_seed["xf"], data_seed["modes_m2"][240], color="#e41a1c", linestyle="-", label=r"$J=2\kappa$")
@@ -93,11 +92,9 @@ ax[0][1].plot(data_seed["xf"], data_seed["modes_m1"][240], color="#4daf4a", line
 
 ax[0][1].set_xlim((0, 0.5))
 ax[0][1].set_ylim((0,1.01))
-##
-ax[0][1].set_xticks([0, 0.5])
-ax[0][1].set_yticks([0, 1])
-##
-#
+
+ax[0][1].set_xlabel(r"$\tilde{\omega}_2$")
+
 ################
 
 times = np.arange(data_ChargerBatery["tspan"][0], data_ChargerBatery["tspan"][1], data_ChargerBatery["dt"])
@@ -110,13 +107,10 @@ ax[1][0].plot(times, data_ChargerBatery["mz_battery"][1], color="#4daf4a", lines
 
 
 ax[1][0].set_xlim((0, 15))
-ax[1][0].set_ylim((-np.sqrt(1/2), np.sqrt(1/2)))
-
-
-ax[1][0].set_yticks([-0.5, 0.5])
-ax[1][0].set_xticks([0, 15])
+ax[1][0].set_ylim((-np.sqrt(1/2)-0.1, np.sqrt(1/2)+0.1))
 
 ax[1][0].set_xlabel(r"$t \kappa$")
+ax[1][0].set_ylabel(r"$m_z(t)$")
 
 ############
 
@@ -127,10 +121,6 @@ ax[1][1].plot(data_Nega["time"], data_Nega["Nega_list"][2], color="#e41a1c", lin
 ax[1][1].set_xlim((0, 20))
 ax[1][1].set_ylim((0, 0.5))
 
-
-ax[1][1].set_yticks([0, 0.5])
-ax[1][1].set_xticks([0, 20])
-
 ax[1][1].set_xlabel(r"$t \kappa$")
 ax[1][1].set_ylabel(r"$\mathcal{N}$")
 
@@ -138,7 +128,7 @@ ax[1][1].legend(edgecolor="black", framealpha=1,handlelength=1.3, borderpad=0.3,
 
 ###############
 plt.tight_layout()
-plt.subplots_adjust(wspace=0.25, hspace=0.6)
-plt.savefig("Setup2_Appendix.pdf", bbox_inches="tight",dpi=400)
+plt.subplots_adjust(wspace=0.25, hspace=0.35)
+plt.savefig("Figures/Setup2_Appendix.pdf", bbox_inches="tight",dpi=400)
 
 

@@ -50,15 +50,15 @@ plt.rcParams.update({
     "xtick.minor.size": 3.5,
     "ytick.minor.size": 3.5,
     #
-    "xtick.labelsize": 20,
-    "ytick.labelsize": 20,
+    "xtick.labelsize": 15,
+    "ytick.labelsize": 15,
     #
     "legend.frameon": True,
-    "legend.fontsize": 20,
+    "legend.fontsize": 15,
     "legend.edgecolor": "white",
-    "axes.titlesize": 20,
+    "axes.titlesize": 15,
     "axes.titleweight": "bold",
-    "axes.labelsize":20
+    "axes.labelsize": 15
 })
 
 with open('Data/Data_seeding_PhaseDiagram_SP_TC_test_parallel.pickle', 'rb') as handle:
@@ -96,11 +96,12 @@ fig, ax = plt.subplots(2,2, figsize=(8, 5))#, layout="constrained")
 cbar_et = ax[0][0].pcolormesh(X_work, Y_work, (1 - data_PD_work["mz1e2_mat"] - data_PD_work["mz2e2_mat"]).T.real
                               , cmap="PuBu_r",rasterized=True)
 cbar2 = fig.colorbar(cbar_et, ax=ax[0][0], pad=.01, fraction=0.05,  orientation='vertical')
-cbar2.ax.set_title(r"$\bar{\dot{w}}/\kappa\nu$", y=-0.2, pad=-0, loc="left")
+#cbar2.ax.set_title(r"$\bar{\dot{w}}/\kappa\nu$", y=-0.2, pad=-0, loc="left")
+cbar2.ax.set_title(r"$\bar{\dot{w}}/\kappa\nu$",  loc="left")
 cbar2.set_ticks([0.0, 1.0])
 
 
-ax[0][0].set_xlabel(r"$\Omega/\kappa$", labelpad=-10)
+ax[0][0].set_xlabel(r"$\Omega/\kappa$")#, labelpad=-10)
 ax[0][0].set_ylabel(r"$J/\kappa$")
 
 ax[0][0].set_ylim((0, 3.0))
@@ -125,13 +126,13 @@ internal_energy = data_Bi["internal_energy_list"]
 ax[0][1].plot(J_list, internal_energy, color="#e41a1c", linestyle="-")
 ax[0][1].plot(J_list, 1/2*(-np.sqrt(1 - (data_Bi["ω2x"]*J_list /(J_list**2 + 1))**2) + 1), color="#377eb8", linestyle="--")
 
-ax[0][1].set_xlabel(r"$J/\kappa$", labelpad=-10)
+ax[0][1].set_xlabel(r"$J/\kappa$")#, labelpad=-10)
 ax[0][1].set_ylabel(r"$\bar{\mathcal{E}}$")
 
 ax[0][1].set_xlim((1.8, 2.3))
 ax[0][1].set_ylim((0.2, 0.6))
-ax[0][1].set_xticks([1.8, 2.3])
-ax[0][1].set_yticks([0.3, 0.5])
+#ax[0][1].set_xticks([1.8, 2.3])
+#ax[0][1].set_yticks([0.3, 0.5])
 
 #ax[0][1].legend(edgecolor="black", framealpha=1,handlelength=1.3, borderpad=0.3, fontsize=15, loc=0, labelspacing=0.1, handletextpad=0.4, ncol=1, columnspacing=0.3)
 
@@ -151,21 +152,21 @@ ax[1][0].plot(data_eff["time"][0:-1], eff_list[1], color="#e41a1c", label=r"$J=1
 ax[1][0].plot(data_eff["time"][0:-1], eff_list[2], color="#377eb8", label=r"$J=2.1\kappa$", linestyle = (0,(3, 1, 1, 1)))
 ax[1][0].plot(data_eff["time"][0:-1], eff_list[3], color="#984ea3", label=r"$J=3.0\kappa$", linestyle = (0, (1, 1)))
 
-ax[1][0].set_xlabel(r"$t\kappa$", labelpad=-10)
+ax[1][0].set_xlabel(r"$t\kappa$")#, labelpad=-10)
 ax[1][0].set_ylabel(r"$\eta(t)$")
        
 ax[1][0].set_xlim((0, 30))
 ax[1][0].set_ylim((0.0, 0.5))
-ax[1][0].set_yticks([0, 0.5])
-ax[1][0].set_xticks([0, 30.0])
+#ax[1][0].set_yticks([0, 0.5])
+#ax[1][0].set_xticks([0, 30.0])
         
 ax[1][0].legend(edgecolor="black", framealpha=1,handlelength=1.3, borderpad=0.3, fontsize=15, loc=0, labelspacing=0.1, handletextpad=0.4, ncol=1, columnspacing=0.3)
 
 #################### Plot 4 
 
 ax[1][1].plot(ocupp_numb, negativity, color="black")
-ax[1][1].set_xlabel(r"$\bar{n}$", labelpad=-10)
-ax[1][1].set_ylabel(r"$\mathcal{N}$")
+ax[1][1].set_xlabel(r"$n$")#, labelpad=-10)
+ax[1][1].set_ylabel(r"$\bar{\mathcal{N}}$")
 
 
 ax[1][1].set_xscale("log")
@@ -174,12 +175,13 @@ ax[1][1].set_xscale("log")
 ax[1][1].text(0.0025, 0.005, r"$J=1\kappa$", fontsize=20)
 ax[1][1].text(0.0025, 0.015, r"$\Omega=2.5\kappa$", fontsize=20)
 ax[1][1].ticklabel_format(axis='y', style='sci', scilimits=(0,0))
-ax[1][1].set_yticks([0., 0.045])
+#ax[1][1].set_yticks([0., 0.045])
 
 
 ###################
 
-plt.subplots_adjust(wspace=0.4, hspace=0.4)
+plt.tight_layout()
+plt.subplots_adjust(wspace=0.2, hspace=0.3)
 
 plt.savefig("Figures/Setup2_panels.pdf", bbox_inches="tight" ,dpi=400)
 

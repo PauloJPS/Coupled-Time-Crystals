@@ -51,15 +51,15 @@ plt.rcParams.update({
     "xtick.minor.size": 3.5,
     "ytick.minor.size": 3.5,
     #
-    "xtick.labelsize": 20,
-    "ytick.labelsize": 20,
+    "xtick.labelsize": 15,
+    "ytick.labelsize": 15,
     #
     "legend.frameon": True,
-    "legend.fontsize": 20,
+    "legend.fontsize": 15,
     "legend.edgecolor": "white",
-    "axes.titlesize": 20,
+    "axes.titlesize": 15,
     "axes.titleweight": "bold",
-    "axes.labelsize":20
+    "axes.labelsize":15
 })
 
 
@@ -88,28 +88,28 @@ fig = plt.figure(figsize=(8, 3))
 ax0 = fig.add_subplot(1, 2, 1)  # 1 row, 2 columns, 1st position
 
 ax0.plot(J_list, np.array(internal_energy), color="#e41a1c", linestyle="-")
-ax0.plot(J_list, np.real(stationary_internal_energy))
-ax0.set_xlabel(r"$J$")
+#ax0.plot(J_list, np.real(stationary_internal_energy))
+ax0.set_xlabel(r"$J/\kappa$")
 ax0.set_ylabel(r"$\bar{\mathcal{E}}$")
 
 ax0.set_xlim((2, 4))
 ax0.set_ylim((0, 2*0.55))
 
 ax0.set_yticks([0, 2*0.5])
-ax0.set_xticks([2, 4]) ############
+ax0.set_xticks([2, 3, 4]) ############
 ax1 = fig.add_subplot(2, 2, 2)  # 2 rows, 2 columns, 2nd position
 
 ax1.plot(data_eff["times"], 2*np.sqrt(1/2)*(data_eff["mz_tc"] - data_eff["mz_tc"][0]), color="#e41a1c", linestyle="-")
 ax1.plot(data_eff["times"], 2*np.sqrt(1/2)*(data_eff["mz_ss"] - data_eff["mz_ss"][0]), color="#377eb8", linestyle="--")
 
-ax1.set_xlabel(r"$t\kappa$", labelpad=-10)
+#ax1.set_xlabel(r"$t\kappa$")#, labelpad=-10)
 ax1.set_ylabel(r"$\mathcal{E}(t)$")
 
 ax1.set_xlim((0.0, 20))
 ax1.set_ylim((0, 2.1))
 
-ax1.set_xticks([0, 20])
-ax1.set_yticks([0, 2])
+#ax1.set_xticks([0, 20])
+#ax1.set_yticks([0, 2])
 #############
 ax2 = fig.add_subplot(2, 2, 4)  # 2 rows, 2 columns, 4th position
 
@@ -121,18 +121,28 @@ heat_time_tc = np.array([2*simpson(data_eff["mx_tc"][0:j+1]**2 + data_eff["my_tc
 heat_time_ss = np.array([2*simpson(data_eff["mx_ss"][0:j+1]**2 + data_eff["my_ss"][0:j+1]**2, data_eff["times"][0:j+1]) 
                          for j in range(len(data_eff["times"])-1)])
 
-ax2.plot(data_eff["times"][0:-1], energy_time_tc[0:-1]/(energy_time_tc[0:-1] + heat_time_tc), color="#e41a1c", linestyle="-")
-ax2.plot(data_eff["times"][0:-1], energy_time_ss[0:-1]/(energy_time_ss[0:-1] + heat_time_ss), color="#377eb8", linestyle="--")
+ax2.plot(data_eff["times"][0:-1], energy_time_tc[0:-1]/(energy_time_tc[0:-1] + heat_time_tc), 
+         color="#e41a1c", linestyle="-", label=r"$\mathrm{TC}$")
+ax2.plot(data_eff["times"][0:-1], energy_time_ss[0:-1]/(energy_time_ss[0:-1] + heat_time_ss),
+         color="#377eb8", linestyle="--", label=r"$\mathrm{SP}$")
 
 ax2.set_xlim((0.0, 20))
 ax2.set_ylim((0, 1.01))
-ax2.set_xticks([0, 20])
+#ax2.set_xticks([0, 20])
 
-ax2.set_xlabel(r"$t\kappa$", labelpad=-10)
+ax2.set_xlabel(r"$t\kappa$")#, labelpad=-10)
 ax2.set_ylabel(r"$\eta(t)$")
 
+ax2.legend(edgecolor="black", framealpha=1,handlelength=1.3, borderpad=0.3, fontsize=15, loc=1, labelspacing=0.1, handletextpad=0.4, ncol=1, columnspacing=0.3)
+
+
+##############
 plt.tight_layout()
 
-plt.savefig("Setup1_batteries.pdf", bbox_inches="tight")
+plt.setp(ax1.get_xticklabels(), visible=False)
+plt.subplots_adjust(bottom=0.2, top=0.9)
+
+#############
+plt.savefig("Figures/Setup1_batteries.pdf", bbox_inches="tight")
 
 
