@@ -77,7 +77,7 @@ def Trajectory_Correlations():
     
     parameters = initial_state()
 
-    parameters["tspan"] = (0, 1000)
+    parameters["tspan"] = (0, 100)
 
     parameters["ω1x"] = 2.0
     parameters["ω2x"] = 2.0
@@ -87,7 +87,7 @@ def Trajectory_Correlations():
     Nint = int(tlen/parameters["dt"])
  
 
-    gz, g = 2, 2
+    gz, g = 1, 3
 
     parameters["gz"] = gz 
     parameters["gy"] = g

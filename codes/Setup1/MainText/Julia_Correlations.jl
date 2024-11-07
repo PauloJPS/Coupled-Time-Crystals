@@ -1,6 +1,9 @@
+using PyCall 
 using LinearAlgebra
 using DifferentialEquations
 using Printf
+
+np = pyimport("numpy")
 
 ######
 ###### The dynamics of the covariance matrix and the mean-field quantities 
@@ -100,8 +103,8 @@ end
 
 function get_params_and_initial_condition(g, gz)
     # Define parameters
-    ω1x, ω1z = 1.0, 0.0
-    ω2x, ω2z = 1.0, 0.0
+    ω1x, ω1z = 2.0, 0.0
+    ω2x, ω2z = 2.0, 0.0
     gx, gy, gz = g, g, gz 
     k1, k2 = 1.0, 1.0
     n1, n2 = 0.0, 0.0
@@ -166,8 +169,6 @@ function QuantumClassicalThermodynamics(sol)
     ##### This part will need further optimization, basically, I don't need to create another array of covariance matrices 
     covariance = CovarianceMatrix(sol)  # Define or import this function
 
-    bosonic_sy = [0 1; -1 0]
-
     #### Vector for quantum discord 
     informational_quantities = Float64[]
 
@@ -193,8 +194,8 @@ function QuantumClassicalThermodynamics(sol)
         Delta = c_alpha + c_beta + 2 * c_gamma
         TR_Delta = c_alpha + c_beta - 2 * c_gamma
 
-        v_p = sqrt(0.5 * Delta + 0.5 * sqrt(abs(Delta^2.0 - 4 * c_delta)))  # The abs prevents numeric negative zeros
-        v_m = sqrt(0.5 * Delta - 0.5 * sqrt(abs(Delta^2.0 - 4 * c_delta)))  # The abs prevents numeric negative zeros
+        v_p = sqrt(0.5 * Delta + 0.5 * sqrt(Delta^2.0 - 4 * c_delta))  # The abs prevents numeric negative zeros
+        v_m = sqrt(0.5 * Delta - 0.5 * sqrt(Delta^2.0 - 4 * c_delta))  # The abs prevents numeric negative zeros
 
         #### E min 
         Emin = EvaluateEmin(c_alpha, c_beta, c_gamma, c_delta)
@@ -220,8 +221,12 @@ function simulate(tf)
 
 	tspan = (0.0, tf)
 	prob = ODEProblem(func!, y0, tspan, p)
-	sol = solve(prob, Vern9(), abstol=1e-12, reltol=1e-12, save_everystep=true)
-	
+	sol = solve(prob, DP8(), abstol=1e-12, reltol=1e-12, maxiters=1e8, saveat=0.1,
+		    save_everystep=false, progress=true)
+
+	np.savetxt("sol.txt", sol.u)
+	np.savetxt("time.txt", sol.t)
+
 	return sol
 end
 

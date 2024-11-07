@@ -214,15 +214,14 @@ def MeanField_PD():
 
     return g_list, gz_list, work_tc, work_sp
 
+def Evaluating_Adiabatic_following():
 
-def Evaluating_Bistability():
-
-    ### Fig 3 (a)
+    ### Fig 3 (a) gray region
 
     ### Simulate the time-integrated ergotropy as function of J
     parameters = initial_state()
 
-    parameters["tspan"] = (0, 500)
+    parameters["tspan"] = (0, 1000)
     parameters["dt"] = 0.1
 
     Omega = 2.0
@@ -237,7 +236,71 @@ def Evaluating_Bistability():
     parameters["k2"] = k
 
     N = 1000
-    g_list = np.linspace(2.0, 4.0, N) 
+    g_list = np.linspace(2.0, 5.0, N) 
+
+    ergotropy = []
+
+    ### Time interval to avarege
+    tlen = parameters["tspan"][1]
+    Nint = int(tlen/parameters["dt"])
+
+    for i, J in enumerate(g_list):
+        
+        print(i) 
+
+        parameters["gx"], parameters["gy"] = J, J
+        
+        #####
+        times, sol = Simul_Traj(parameters)
+
+        E = 1/np.sqrt(2)*(sol[:,2][Nint//2:] + sol[:,5][Nint//2:] + 2/np.sqrt(2))
+
+        ergotropy.append(simpson(E, times[Nint//2:])/(times[-1]-times[Nint//2]))
+
+        parameters["m1x0"] = sol[:,0][-1] 
+        parameters["m1y0"] = sol[:,1][-1]  
+        parameters["m1z0"] = sol[:,2][-1] 
+
+        parameters["m2x0"] = sol[:,3][-1] 
+        parameters["m2y0"] = sol[:,4][-1] 
+        parameters["m2z0"] = sol[:,5][-1] 
+
+        ####
+
+    data = parameters.copy()
+
+    data.update({"g_list":g_list})
+    data.update({"erg":ergotropy})
+
+    with open('Data/Data_erg_adiabatic_following.pickle', 'wb') as handle:
+        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return ergotropy, g_list
+
+
+def Evaluating_Bistability():
+
+    ### Fig 3 (a)
+
+    ### Simulate the time-integrated ergotropy as function of J
+    parameters = initial_state()
+
+    parameters["tspan"] = (0, 1000)
+    parameters["dt"] = 0.1
+
+    Omega = 2.0
+    J = 4.0
+    Jz = 1.0
+    k = 1.0
+
+    parameters["ω1x"] =  Omega
+    parameters["ω2x"] = Omega 
+
+    parameters["k1"] = k
+    parameters["k2"] = k
+
+    N = 1000
+    g_list = np.linspace(2.0, 5.0, N) 
 
     ergotropy = []
 

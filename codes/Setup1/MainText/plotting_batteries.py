@@ -63,16 +63,23 @@ plt.rcParams.update({
 })
 
 
-with open("Data/Data_Bistability_InternalEnergy.pickle", 'rb') as handle:
-    data_erg = pickle.load(handle)
+#with open("Data/Data_Bistability_InternalEnergy.pickle", 'rb') as handle:
+#    data_erg = pickle.load(handle)
+
+with open("Data/Data_erg_bistable.pickle", "rb") as handle:
+    data_erg_bis = pickle.load(handle)
+
+with open("Data/Data_erg_adiabatic_following.pickle", "rb") as handle:
+    data_erg_bis_ad = pickle.load(handle)
 
 with open('Data/Data_efficiency_sp_tp.pickle', 'rb') as handle:
     data_eff = pickle.load(handle)
 
-J_list =  data_erg["J_list"]
-internal_energy = data_erg["internal_energy_list"]
+J_list =  data_erg_bis["g_list"]
+internal_energy = data_erg_bis["erg"]
+internal_energy_ad = data_erg_bis_ad["erg"]
 
-stationary_internal_energy = -1*np.sqrt((1 - data_erg["ω2x"]**2/((J_list-1)**2 + 1))) + 1
+stationary_internal_energy = -1*np.sqrt((1 - data_erg_bis["ω2x"]**2/((J_list-1)**2 + 1))) + 1
 
 #mx_list  = data_TC["mx_list"] 
 #my_list  = data_TC["my_list"] 
@@ -88,11 +95,12 @@ fig = plt.figure(figsize=(8, 3))
 ax0 = fig.add_subplot(1, 2, 1)  # 1 row, 2 columns, 1st position
 
 ax0.plot(J_list, np.array(internal_energy), color="#e41a1c", linestyle="-")
-#ax0.plot(J_list, np.real(stationary_internal_energy))
+ax0.plot(J_list, np.array(internal_energy_ad), color="#377eb8", linestyle="--")
+ax0.plot(J_list, np.real(stationary_internal_energy), color="#4daf4a", linestyle=":")
 ax0.set_xlabel(r"$J/\kappa$")
 ax0.set_ylabel(r"$\bar{\mathcal{E}}$")
 
-ax0.set_xlim((2, 4))
+ax0.set_xlim((2, 5))
 ax0.set_ylim((0, 2*0.55))
 
 ax0.set_yticks([0, 2*0.5])
@@ -102,14 +110,11 @@ ax1 = fig.add_subplot(2, 2, 2)  # 2 rows, 2 columns, 2nd position
 ax1.plot(data_eff["times"], 2*np.sqrt(1/2)*(data_eff["mz_tc"] - data_eff["mz_tc"][0]), color="#e41a1c", linestyle="-")
 ax1.plot(data_eff["times"], 2*np.sqrt(1/2)*(data_eff["mz_ss"] - data_eff["mz_ss"][0]), color="#377eb8", linestyle="--")
 
-#ax1.set_xlabel(r"$t\kappa$")#, labelpad=-10)
 ax1.set_ylabel(r"$\mathcal{E}(t)$")
 
 ax1.set_xlim((0.0, 20))
 ax1.set_ylim((0, 2.1))
 
-#ax1.set_xticks([0, 20])
-#ax1.set_yticks([0, 2])
 #############
 ax2 = fig.add_subplot(2, 2, 4)  # 2 rows, 2 columns, 4th position
 
@@ -122,9 +127,9 @@ heat_time_ss = np.array([2*simpson(data_eff["mx_ss"][0:j+1]**2 + data_eff["my_ss
                          for j in range(len(data_eff["times"])-1)])
 
 ax2.plot(data_eff["times"][0:-1], energy_time_tc[0:-1]/(energy_time_tc[0:-1] + heat_time_tc), 
-         color="#e41a1c", linestyle="-", label=r"$\mathrm{TC}$")
+         color="#e41a1c", linestyle="-", label=r"$\mathrm{Time\;crystal}$")
 ax2.plot(data_eff["times"][0:-1], energy_time_ss[0:-1]/(energy_time_ss[0:-1] + heat_time_ss),
-         color="#377eb8", linestyle="--", label=r"$\mathrm{SP}$")
+         color="#377eb8", linestyle="--", label=r"$\mathrm{Stationary}$")
 
 ax2.set_xlim((0.0, 20))
 ax2.set_ylim((0, 1.01))

@@ -116,7 +116,7 @@ def get_traj(tspan, dt, ω1x, ω1z, ω2x, ω2z, gx, gy, gz, k1, k2, n1, n2,
 
     p = (ω1x, ω1z, ω2x, ω2z, gx, gy, gz, k1, k2, n1, n2)
 
-    sol = solve_ivp(func, tspan, initial, args=p, method='DOP853', t_eval=np.arange(tspan[0], tspan[1], dt), rtol=1e-14, atol=1e-14)
+    sol = solve_ivp(func, tspan, initial, args=p, method='LSODA', t_eval=np.arange(tspan[0], tspan[1], dt), rtol=1e-12, atol=1e-12)
     print("Status = {}\n".format(sol.status))
 
     return sol.t, sol.y.T
@@ -240,7 +240,7 @@ def func_log(x):
     else: 
         return (x+1)/2 * np.log((x+1)/2) - (x-1)/2 * np.log((x-1)/2)
   
-def QuantumClassicalThermodynamics(sol, time):
+def QuantumClassicalThermodynamics(sol):
     """
         Calculate quantum discord, one-way classical correlation, mutual information,
           according to the definition in the paper PRL 105, 030501 (2010)
