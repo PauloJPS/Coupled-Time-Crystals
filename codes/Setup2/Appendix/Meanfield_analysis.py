@@ -61,8 +61,8 @@ def simulate():
     parameters["ω2x"] = 2.5
 
     
-    parameters["gx"] = 1.8
-    parameters["gy"] = 1.8
+    parameters["gx"] = 3
+    parameters["gy"] = 3
     parameters["gz"] = 0.0
 
     #### theta {0, pi}, phi {0, 2pi}

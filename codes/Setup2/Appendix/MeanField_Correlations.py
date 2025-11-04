@@ -120,6 +120,94 @@ def initial_state():
    
     return parameters
 
+def Correlations_and_MeanField():
+
+    parameters = initial_state()
+
+    parameters["tspan"] = (0, 100)
+    parameters["dt"] = 0.01
+
+    parameters["ω1x"] = 0
+    parameters["ω2x"] = 3.0
+    parameters["gz"] = 0
+    parameters["gy"] = 1
+    parameters["gx"] = 1
+ 
+    ### Time interval to avarege
+    tlen = parameters["tspan"][1]
+    Nint = int(tlen/parameters["dt"])
+ 
+    ### getting the solution 
+    time, sol = Simul_Traj(parameters)
+
+    magnetizations = MeanField(sol)
+
+    information = QuantumClassicalThermodynamics(sol)
+   
+    return magnetizations, information
+
+def Fourier_traj_MF_Cor():
+
+    #### Function Appendix (fourier spectrum in fuction of J)
+
+    parameters = initial_state()
+
+    parameters["tspan"] = (0, 2000)
+    parameters["dt"] = 0.1
+
+    parameters["ω2x"] = 3
+    parameters["ω1x"] = 0
+    parameters["gz"] = 0
+    parameters["gx"] = 1
+    parameters["gy"] = 1
+
+    parameters["m1x0"], parameters["m1z0"], parameters["m1z0"] = 0, 0, -1/np.sqrt(2)
+    parameters["m2x0"], parameters["m2y0"], parameters["m2z0"] = 0, 0, -1/np.sqrt(2)
+
+    times, sol = Simul_Traj(parameters)
+    magnetizations = MeanField(sol)
+    information = QuantumClassicalThermodynamics(sol)
+
+    aux_times = times[len(times)//2:]
+    aux_mx1 = sol[:,0][len(times)//2:]
+    aux_mz1 = sol[:,2][len(times)//2:]
+
+    aux_CC = information[0][len(times)//2:]
+    aux_QD = information[1][len(times)//2:]
+
+    mx1 = fft(aux_mx1 - np.mean(aux_mx1))
+    mz1 = fft(aux_mz1 - np.mean(aux_mz1))
+    CC = fft(aux_CC - np.mean(aux_CC))
+    QD = fft(aux_QD - np.mean(aux_QD))
+
+    aux_mx1 = 2.0/len(aux_times) * np.abs(mx1[0:len(aux_times)//2])
+    aux_mz1 = 2.0/len(aux_times) * np.abs(mz1[0:len(aux_times)//2])
+    aux_CC = 2.0/len(aux_times) * np.abs(CC[0:len(aux_times)//2])
+    aux_QD = 2.0/len(aux_times) * np.abs(QD[0:len(aux_times)//2])
+
+    modes_mx1 = aux_mx1/max(aux_mx1)
+    modes_mz1 = aux_mz1/max(aux_mz1)
+    modes_CC = aux_CC/max(aux_CC)
+    modes_QD = aux_QD/max(aux_QD)
+
+    xf = fftfreq(len(aux_times), parameters["dt"])[:len(aux_times)//2]
+
+    #### Saving
+
+    data = parameters.copy()
+
+    data.update({"xf":xf})
+    data.update({"modes_mx1":modes_mx1})
+    data.update({"modes_mz1":modes_mz1})
+    data.update({"modes_CC":modes_CC})
+    data.update({"modes_QD":modes_QD})
+
+    with open('Data/Data_seeding_modes_mf_cor.pickle', 'wb') as handle:
+        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return xf, modes_mx1, modes_mz1, modes_CC, modes_QD
+
+
 
 def Trajectory_Correlations():
     

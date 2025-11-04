@@ -116,7 +116,7 @@ def get_traj(tspan, dt, ω1x, ω1z, ω2x, ω2z, gx, gy, gz, k1, k2, n1, n2,
 
     p = (ω1x, ω1z, ω2x, ω2z, gx, gy, gz, k1, k2, n1, n2)
 
-    sol = solve_ivp(func, tspan, initial, args=p, method='LSODA', t_eval=np.arange(tspan[0], tspan[1], dt), rtol=1e-12, atol=1e-12)
+    sol = solve_ivp(func, tspan, initial, args=p, method='LSODA', t_eval=np.arange(tspan[0], tspan[1], dt), rtol=1e-12, atol=1e-16)
     print("Status = {}\n".format(sol.status))
 
     return sol.t, sol.y.T

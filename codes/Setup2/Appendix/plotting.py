@@ -69,9 +69,20 @@ with open("Data/Data_Nega_trajectories.pickle", "rb") as handle:
 with open("Data/Data_seeding_fourier.pickle", "rb") as handle: 
     data_seed = pickle.load(handle)
 
+with open("Data/Data_Nega_trajectories.pickle", "rb") as handle:
+    data = pickle.load(handle)
+
+with open("Data/Data_seeding_modes_mf_cor.pickle", "rb") as handle:
+    data_mf_corr = pickle.load(handle)
+
+time = data["time"]
+Clas_list = data["Clas_list"] 
+Quan_list = data["Quan_list"] 
+Nega_list = data["Nega_list"] 
+
 ##################
 
-fig, ax = plt.subplots(2,2, figsize=(8, 4))#, layout="constrained")
+fig, ax = plt.subplots(2,3, figsize=(8, 4))#, layout="constrained")
 
 #################### Plot 1 
 
@@ -84,51 +95,86 @@ ax[0][0].set_ylim((0, 0.5))
 
 ax[0][0].set_xlabel(r"$J/\kappa$")
 ax[0][0].set_ylabel(r"$\tilde{\omega}_2$")
-
-################
-
-ax[0][1].plot(data_seed["xf"], data_seed["modes_m2"][240], color="#e41a1c", linestyle="-", label=r"$J=2\kappa$")
-ax[0][1].plot(data_seed["xf"], data_seed["modes_m1"][240], color="#4daf4a", linestyle="-.", label=r"$J=2\kappa$")
-
-ax[0][1].set_xlim((0, 0.5))
-ax[0][1].set_ylim((0,1.01))
-
-ax[0][1].set_xlabel(r"$\tilde{\omega}_2$")
+ax[0][0].set_yticks([0,0.5])
 
 ################
 
 times = np.arange(data_ChargerBatery["tspan"][0], data_ChargerBatery["tspan"][1], data_ChargerBatery["dt"])
 
-ax[1][0].plot(times, data_ChargerBatery["mz_charger"][0], color="#e41a1c", linestyle="-.", label=r"$J_z=1\kappa$")
-ax[1][0].plot(times, data_ChargerBatery["mz_charger"][1], color="#e41a1c", linestyle="-", label=r"$J_z=1\kappa$")
+ax[0][1].plot(times, data_ChargerBatery["mz_charger"][0], color="#e41a1c", linestyle="-.", label=r"$J_z=1\kappa$")
+ax[0][1].plot(times, data_ChargerBatery["mz_charger"][1], color="#e41a1c", linestyle="-", label=r"$J_z=1\kappa$")
+      
+ax[0][1].plot(times, data_ChargerBatery["mz_battery"][0], color="#4daf4a", linestyle="-.", label=r"$J_z=1\kappa$")
+ax[0][1].plot(times, data_ChargerBatery["mz_battery"][1], color="#4daf4a", linestyle="-", label=r"$J_z=1\kappa$")
+      
+      
+ax[0][1].set_xlim((0, 15))
+ax[0][1].set_ylim((-np.sqrt(1/2)-0.1, np.sqrt(1/2)+0.1))
+      
+ax[0][1].set_xlabel(r"$t \kappa$")
+ax[0][1].set_ylabel(r"$m_z(t)$")
+ax[0][1].set_xticks([0,15])
+ax[0][1].set_yticks([-0.7,0.7])
 
-ax[1][0].plot(times, data_ChargerBatery["mz_battery"][0], color="#4daf4a", linestyle="-.", label=r"$J_z=1\kappa$")
-ax[1][0].plot(times, data_ChargerBatery["mz_battery"][1], color="#4daf4a", linestyle="-", label=r"$J_z=1\kappa$")
+################
+
+ax[0][2].plot(data_mf_corr["xf"], data_mf_corr["modes_mx1"], color="#e41a1c", linewidth=3, linestyle="-",  label=r"$\tilde{m}_x^{(1)}$")
+ax[0][2].plot(data_mf_corr["xf"], data_mf_corr["modes_CC"],  color="#4daf4a", linewidth=2.5, linestyle="-.", label=r"$\tilde{\mathcal{J}}$")
+ax[0][2].plot(data_mf_corr["xf"], data_mf_corr["modes_QD"],  color="#377eb8", linewidth=2, linestyle=":",  label=r"$\tilde{\mathcal{D}}$")
+
+ax[0][2].set_xlim((0, 2))
+ax[0][2].set_ylim((0,1.01))
+ax[0][2].set_xticks([0,2])
+
+ax[0][2].legend(edgecolor="black", framealpha=1,handlelength=1.3, 
+            borderpad=0.2, fontsize=12, loc=1, labelspacing=0.1, handletextpad=0.4, ncol=1, columnspacing=0.3)
+
+ax[0][2].set_xlabel(r"$\tilde{\omega}_2$")
 
 
-ax[1][0].set_xlim((0, 15))
-ax[1][0].set_ylim((-np.sqrt(1/2)-0.1, np.sqrt(1/2)+0.1))
-
-ax[1][0].set_xlabel(r"$t \kappa$")
-ax[1][0].set_ylabel(r"$m_z(t)$")
 
 ############
 
-ax[1][1].plot(data_Nega["time"], data_Nega["Nega_list"][0], color="#4daf4a", linestyle="-", label=r"$J_z=0.5\kappa$")
-ax[1][1].plot(data_Nega["time"], data_Nega["Nega_list"][1], color="#377eb8", linestyle="-.", label=r"$J_z=1.0\kappa$")
-ax[1][1].plot(data_Nega["time"], data_Nega["Nega_list"][2], color="#e41a1c", linestyle="--", label=r"$J_z=1.5\kappa$")
+ax[1][0].plot(time, Clas_list[0], color="#e41a1c", linestyle="-", label=r"$J = \kappa$")
+ax[1][0].plot(time, Clas_list[1], color="#377eb8", linestyle="-", label=r"$J = 2\kappa$")
+ax[1][0].plot(time, Clas_list[2], color="#4daf4a", linestyle="-", label=r"$J = 3\kappa$")
+
+ax[1][0].set_xlim((0, 20))
+ax[1][0].set_ylim(bottom=0)
+ax[1][0].set_xlabel(r"$t \kappa$")
+ax[1][0].set_ylabel(r"$\mathcal{J}$")
+ax[1][0].set_xticks([0,20])
+
+#### 
+ax[1][1].plot(time, Quan_list[0], color="#e41a1c", linestyle="-", label=r"$J = \kappa$")
+ax[1][1].plot(time, Quan_list[1], color="#377eb8", linestyle="-", label=r"$J = 2\kappa$")
+ax[1][1].plot(time, Quan_list[2], color="#4daf4a", linestyle="-", label=r"$J = 3\kappa$")
 
 ax[1][1].set_xlim((0, 20))
-ax[1][1].set_ylim((0, 0.5))
-
+ax[1][1].set_ylim(bottom=0)
 ax[1][1].set_xlabel(r"$t \kappa$")
-ax[1][1].set_ylabel(r"$\mathcal{N}$")
+ax[1][1].set_ylabel(r"$\mathcal{D}$")
+ax[1][1].set_yticks([0,1])
+ax[1][1].set_xticks([0,20])
 
-ax[1][1].legend(edgecolor="black", framealpha=1,handlelength=1.3, borderpad=0.3, fontsize=15, loc=1, labelspacing=0.1, handletextpad=0.4, ncol=1, columnspacing=0.3)
 
-###############
+#### 
+ax[1][2].plot(time, Nega_list[0], color="#e41a1c", linestyle="-", label=r"$J = \kappa$")
+ax[1][2].plot(time, Nega_list[1], color="#377eb8", linestyle="-", label=r"$J = 2\kappa$")
+ax[1][2].plot(time, Nega_list[2], color="#4daf4a", linestyle="-", label=r"$J = 3\kappa$")
+
+ax[1][2].set_xlim((0, 20))
+ax[1][2].set_ylim(bottom=0)
+ax[1][2].set_xlabel(r"$t \kappa$")
+ax[1][2].set_ylabel(r"$\mathcal{N}$")
+ax[1][2].set_yticks([0,1])
+ax[1][2].set_xticks([0,20])
+
+ax[1][2].legend(edgecolor="black", framealpha=1,handlelength=1.3, 
+             borderpad=0.3, fontsize=15, loc=1, labelspacing=0.1, handletextpad=0.4, ncol=1, columnspacing=0.3)
+
 plt.tight_layout()
-plt.subplots_adjust(wspace=0.25, hspace=0.35)
-plt.savefig("Figures/Setup2_Appendix.pdf", bbox_inches="tight",dpi=400)
+#plt.subplots_adjust(wspace=0.25, hspace=0.35)
+plt.savefig("Figures/Setup2_Appendix_new_version.pdf", bbox_inches="tight",dpi=400)
 
 
