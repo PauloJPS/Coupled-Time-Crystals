@@ -1,6 +1,4 @@
-Coupled-Time-Crystals
-
-Codes for reproducing the data and figures of the article entitled "Thermodynamics and energy storage in coupled time crystals"
+Codes for reproducing the data and figures of the article entitled "Thermodynamics of coupled time crystals with an application to energy storage"
 
 Authors: Paulo J. Paulino,Albert Cabot, Gabriele De Chiara, Mauro Antezza, Igor Lesanovsky, and Federico Carollo
 
@@ -13,7 +11,7 @@ The codes require NumPy, SciPy, QuTiP, and Matplotlib.
 
 The "figures" folder contains a file .svg, where the figures were post-processed (adjusted font size, font style, legend size, etc.).
 
-There are two main codes, resposible for solving the mean-field and correlations set of equations. 
+There are two main codes, responsible for solving the mean-field and correlations set of equations. 
 
 They files are named MeanField.py and Correlations.py
 
