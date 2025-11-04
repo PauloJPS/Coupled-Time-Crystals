@@ -9,8 +9,6 @@ Basic Information about the Directories:
 The codes are written in Python.
 The codes require NumPy, SciPy, QuTiP, and Matplotlib.
 
-The "figures" folder contains a file .svg, where the figures were post-processed (adjusted font size, font style, legend size, etc.).
-
 There are two main codes, responsible for solving the mean-field and correlations set of equations. 
 
 They files are named MeanField.py and Correlations.py
@@ -20,7 +18,6 @@ Then, we dived the codes in two folders, one for each setup. Inside each folder 
 The folder structure is
 
 - Main 
-    - figures 
     - codes
         - Setup 1 
             - MainText 
